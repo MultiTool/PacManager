@@ -24,4 +24,5 @@ bin/*
 *.obj
 *.res
 *.lfm
+*.err
 lib/*
