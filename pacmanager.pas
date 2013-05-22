@@ -43,16 +43,13 @@ Interface
 USES DOS,CRT,NEODBFIO,mouser,GRAPH, ABUtil2, Print;
 
 CONST
-
    julianbase:ARRAY[1..12] OF INTEGER=(0,31,59,90,120,151,181,212,243,273,
        304,334);
    leapbase:ARRAY[1..12] OF INTEGER=(0,31,60,91,121,152,182,213,244,274,
         305,335);
 
-
    Depts : Menutype = ('P','C','BP','PS','M4','M6','Q','M5','MX','',
          '','','','','','','','','','');
-
 
    lotletters:ARRAY[1..78] OF STRING=('A','B','C'
      ,'D','E','F','G','H','I','J','K','L','M','N','O','P'
@@ -67,13 +64,11 @@ CONST
    CharsPerLine = 40;
    Title = 'Pac-Manager';
 {   Version = '';}
-
 {   Version = 'VCU/MCVHA PHARMACY SERVICES';}
 {   Version = 'Revised 3/14/2001'; }
 {   Version = 'Revised 1/14/2004'; }
-    Version = 'Revised 5/20/2011';
-
-
+{    Version = 'Revised 5/20/2011'; }
+   Version = 'Revised 5/20/2013';
 
    NumOfDepts = 9;
    EnterEscape = ' ENTER - select '+#4+' ESC - cancel ';
@@ -125,7 +120,6 @@ TYPE
 
    DrugPtrType = ^DrugType;
 
-
    ManuType = Record
                 CompanyName,
                 LotNumber,
@@ -147,16 +141,8 @@ TYPE
                   MCVName : string;
                 END;
 
-(*   ReconType = Record
-                 CheckDiscardDate : boolean;
-                 DiscardDate : string;
-               END; *)
-
 VAR
-{   Style : styletype; }
-(*   ReconInfo : Recontype;
-   NumOfLines, CharsPerLine : byte;
-   Medidose : boolean;  *)
+
    h, min, s, hund : Word;
    y, mon, day, dow : Word;
    PrinterStatus : statustype;
@@ -165,12 +151,8 @@ VAR
    NonStand, ChkConc, ChkUD,
    DrugEntered : boolean;  {info entered by F3 (Pac-Manager) method}
    PrinterConfig : PrinterConfigType;
-(*   ShortDate : string;  {date in mmddyy form to be used in lot number}
-   CurrentDept : integer;
-   LotLetter : string;   *)
    Config : configtype;
    Expdate : string;
-(*   Prefix : Prefixtype; *)
    DrugHandle : drugptrtype;
    CommandOption : string;
    Manu : ManuType;
@@ -182,7 +164,6 @@ VAR
    HelpBackground : AreaSaverType;
    LabelInfo : Labeltype;
    DosesString : string[3];
-{   DataSource : char; }
    LotUsed, InfoEntered, InfoDeleted : boolean;
    LabelCounter: integer;
    NumberOfLabels : string;
@@ -191,7 +172,6 @@ VAR
    i : integer;
    MoreLabels : char;
    LengthMenu, ListMenuNum : integer;
-(*   Returnkey : string; *)
    ColorScheme : byte;
    HoldWinMin,HoldWinMax:WORD;
    Subdir : string;
@@ -207,7 +187,6 @@ VAR
    Alphabet : alphabettype;
    DrugBkgrnd : AreaSaverType;
    DrugFile, DrugIndex : string;
-(*   JulianDate : word; *)
    Retrieved,                              {was label retrieved from a freeform saved label database?}
    ManuInfoEntered : boolean;
    RecNum : longint; {record number in drug database}
@@ -236,7 +215,6 @@ Implementation
 
   PROCEDURE DateString(Month, Day, Year : word; VAR DateStr : string; YearDigits : byte; Delimiter : string);
   {YearDigits = 2 for '95'; 4 for '1995'}
-
     VAR
       Errcode : integer;
       DayStr, MonthStr, YearStr : string;
@@ -249,10 +227,7 @@ Implementation
       IF YearDigits = 2 THEN
         YearStr := YearStr[3]+YearStr[4];
       DateStr := MonthStr+Delimiter+DayStr+Delimiter+YearStr;
-
     END;
-
-
 
 PROCEDURE DoHelp(Xloc, Yloc : byte);
   VAR
@@ -262,7 +237,6 @@ PROCEDURE DoHelp(Xloc, Yloc : byte);
     FunctionArea : areasavertype;
     Fmin, FMax : word;
     W, H : byte;
-
 
     PROCEDURE DisplayHelp (FileName, BoxLabel : string; Width, Height : byte);
       VAR
@@ -335,7 +309,6 @@ PROCEDURE DoHelp(Xloc, Yloc : byte);
     TAttr := TextAttr;
     W := 72; H := 20;
     SaveArea(2, 3, 77, 23, HelpBackground);
-    (* TextAttr := Colorscheme; *)
     TextColor(Black);
     TextBackground(LightGray);    {@}
     DrawBox(2, 3, 75,21, DarkGray,Cyan, DarkGray, DarkGray, #4+' Help: Editing keys '+#4,
@@ -782,11 +755,7 @@ PROCEDURE Choosefromprompt(VAR menu:prompttype; menusize,xloc,yloc,Wdt,Hgt:INTEG
      END;
      FreeEntered := FALSE;
      GoToXY(Xloc, Yloc + 1);
-
   END;
-
-
-
 
      BEGIN
        InitPtrMenu(BigMenu);
@@ -804,8 +773,6 @@ PROCEDURE Choosefromprompt(VAR menu:prompttype; menusize,xloc,yloc,Wdt,Hgt:INTEG
          MenuField := 0; DescField := 2;
          (*       MF2 := 0; MF3 := 0; MF4 := 0;  {These are pretty much just placeholders} *)
          BuildBigPtrMenu(LabelFileName, BigMenu, Height, MenuField, 0, 0, 0, DescField, 0, 0, Empty, 'Y');
-(*       BBPtrMenu(LabelFileName, BigMenu, Height, MenuField, 3, 4, 0, DescField, 0, 0, Empty); *)
-(*       BuildBigMenu2(LabelFileName, BigMenu, Height,{ Fieldnum,} Empty, 'N'); *)
          IF Empty THEN BEGIN
            SaveArea(30, 6, 47, 10, ErrorArea);  {15, 8}
            ErrMin := WindMin; ErrMax := WindMax;
@@ -855,204 +822,6 @@ PROCEDURE Choosefromprompt(VAR menu:prompttype; menusize,xloc,yloc,Wdt,Hgt:INTEG
          UNTIL (RetrieveKey = 'RETURN') OR (RetrieveKey = 'ESC');
          DisposeMenu(BigMenu);
          END;
-
-
-(* Test version -- commented out ----------------------- *)
-
-(*  PROCEDURE RetrieveLabel(Dept : string; VAR FreeInfo : labeltype;
-    VAR FreeEntered, Retrieved : boolean; VAR LabelFileName : string);
-
-    VAR
-      ErrorArea,
-      RetrieveArea : areasavertype;
-      ErrMax, ErrMin,
-      RetMax, RetMin : word;
-      MenuField, DescField : integer;
-      RetrieveKey : string;
-      DoSomething : boolean; { did the user press a key that requires action }
-
-    FUNCTION GetRecCnt(DbfFileName : string) : string;
-      VAR
-        TempCntStr : string;
-        DbfSpec : dbfheadertype;
-        DbfResult : string;
-      BEGIN
-        TempCntStr := '';
-        Opendbasefile(Dbfspec, DbfFilename, DbfResult);
-        IF DbfResult = 'GOOD' THEN BEGIN
-          Str(Dbfspec.numofrecs,TempCntStr);
-          Closedbasefile(Dbfspec);
-        END;
-        GetRecCnt := TempCntStr;
-
-      END;
-    PROCEDURE GetFileName(VAR LabelFileName : string; VAR RecNum : integer; VAR FreeInfo : LabelType; VAR Entered : boolean);
-      VAR
-        Filespecs  : dbfheadertype;
-        FileRecord : recordarraytype;
-        Results    : string;
-        Tempstring : string;
-        i          : byte;
-
-      BEGIN
-        For i := 1 to 5 DO BEGIN
-          FreeInfo[i] := '';
-        END;
-        RecNum := ((PageNum - 1) * Height) + ListMenuNum;
-        Opendbasefile(Filespecs, LabelFilename, Results);
-        IF Results = 'GOOD' THEN BEGIN
-           Readdbfrecord(Filespecs, RecNum, Filerecord, Results);
-           Closedbasefile(Filespecs);
-         END;
-         For i := 1 to 5 DO BEGIN
-           FreeInfo[i] := Filerecord[i];
-         END;
-         Entered := TRUE;
-       END;
-
-    PROCEDURE DeleteMenuItem(VAR FreeInfo : labeltype);
-      VAR
-        Tempstring, Results, Tempkey : string;
-        Filespec   : dbfheadertype;
-
-      PROCEDURE DeleteARecord(FileName : STRING; Index : LONGINT);
-      {************************************************************************}
-      {*  Deletes a Dbase record and moves all following records up one.      *}
-      {************************************************************************}
-      VAR
-        Results    : STRING;
-        count      : LONGINT;
-        Filespecs  : dbfheadertype;
-        ByteBlock  : ByteList;   {Just an array of bytes.}
-      BEGIN
-        GoToXY(WhereX, WhereY + 1);
-        Write('Deleting record. . .');
-        Opendbasefile(Filespecs, Filename, Results);
-        IF Results = 'GOOD' THEN BEGIN
-          count := index;
-          While count <= filespecs.numofrecs DO BEGIN
-            ReadBlock(filespecs, count + 1, ByteBlock);
-            WriteBlock(filespecs, count, ByteBlock);
-            Inc(count);
-          END;
-          filespecs.numofrecs := filespecs.numofrecs - 1;
-          {This "with" section is optional.}
-          WITH FileSpecs DO BEGIN
-            SEEK(FileHandle,HeaderLength+(numofrecs*RecordLength));
-            TRUNCATE(FileHandle);
-          END;
-          {end of optional section.}
-          DbfSort(Filespecs, 1);
-          closedbasefile(filespecs);
-        END;
-      END;
-
-
-
-  BEGIN
-     TextColor(White); TextBackground(Blue);
-     Xloc := 2; Yloc := 2;
-     For i := 1 to 5 DO BEGIN
-       Say(Xloc, Yloc, Freeinfo[i], White);
-       inc(Yloc);
-     END;
-
-     Say(Xloc, Yloc + 1, 'Delete item? [Y/N]', White);
-     Del := Upcase(readkey);
-
-     IF Del = 'Y' THEN BEGIN
-       GoToXY(Xloc, Yloc + 1);
-       DeleteARecord(LabelFileName, RecordNum);
-     END;
-     FreeEntered := FALSE;
-     GoToXY(Xloc, Yloc + 1);
-
-  END;
-
-
-
-
-     BEGIN
-       InitPtrMenu(BigMenu);
-       TextBackground(Blue);
-       Dept := Trim(Dept);
-{*       DoSomething := TRUE; }
-       Empty := TRUE;
-       SaveArea(4, 2, 76, 23, RetrieveArea);
-       RetMax := WindMax; RetMin := WindMin;
-
-       IF Dept = 'C' THEN
-         LabelfileName := 'C:\package\cmp\cmpdlist.dbf'
-       ELSE IF Dept = 'PS' THEN
-         LabelfileName := 'C:\package\pca\pcalist.dbf'
-       ELSE
-         LabelfileName := 'C:\package\pack\lbllist.dbf';
-       REPEAT
-         Height := 15;
-{         Empty := TRUE; }
-         MenuField := 0; DescField := 2;
-         {MF2 := 0; MF3 := 0; MF4 := 0;}  {These are pretty much just placeholders}
-
-{         IF DoSomething THEN }
-           BuildBigPtrMenu(LabelFileName, BigMenu, Height, MenuField, 0, 0, 0, DescField, 0, 0, Empty, 'Y');
-         IF Empty THEN BEGIN
-           SaveArea(30, 6, 47, 10, ErrorArea);  {15, 8}
-           ErrMin := WindMin; ErrMax := WindMax;
-           TextBackground(Blue);
-           DrawBox(30,6,44,7,White,Red,15,15,' **ERROR** ',
-            #4+' Press ENTER to continue '+#4,'',#218, #196, #191, #179, #192, #217, #0, #177);
-           TextBackground(Red);
-           Center(LabelfileName, 2, White);
-           Center('is missing or empty. Please', 3, White);
-           Center('enter information in editing phase.', 4, White);
-           InfoEntered := FALSE;
-           Retrievekey := 'ESC';
-           Readln;
-           RestoreArea(30, 6, ErrorArea);
-           WindMin := ErrMin; WindMax := ErrMax;
-         END ELSE BEGIN
-           { SaveArea(4, 2, 76, 23, RetrieveArea);
-           RetMax := WindMax; RetMin := WindMin; }
-           TextAttr := Colorscheme;
-           DrawBox(4,2, 74, 22,LightGray, Blue, White,
-             White,' '+LabelfileName+' contains '+GetRecCnt(LabelfileName)+' labels ',
-             #4+' '+#24+' '+#25+' - choose, ENTER - select, ESC - abort, DEL - delete '+#4,
-             '',#218 ,#196, #191, #179, #192, #217, #176, #177);
-           ListMenuNum := 1;
-           PageNum := 1;
-           Item := '';
-           EnhancedPtrMenu(BigMenu, PageNum, 7, 4, 70, Height + 3, ListMenuNum, Retrievekey, White, Blue, 'Y',
-             6, 17,'ESC RETURN DEL');
-           { IF (RetrieveKey = 'F1') OR (RetrieveKey = 'F2') THEN
-              DoSomething := FALSE
-           ELSE
-              DoSomething := TRUE; }
-           IF Retrievekey = 'RETURN' THEN
-             Retrieved := TRUE;
-{           IF (Retrievekey <> 'ESC') THEN BEGIN }
-             IF (RetrieveKey = 'RETURN') OR (RetrieveKey = 'DEL') THEN BEGIN
-             GetFileName(LabelfileName, RecordNum, FreeInfo, FreeEntered);
-             IF RetrieveKey = 'DEL' THEN BEGIN
-               InfoDeleted := FALSE;
-               DrawBox(14,3,48,12,LightGray,Blue,15, Yellow, '',
-                 '','',#218, #196, #191, #179, #192, #217, #0, #177);
-               DeleteMenuItem(FreeInfo);
-             END;
-           END ELSE IF Retrievekey = 'ESC' THEN BEGIN
-               FreeEntered := FALSE;
-               { Retrievekey := ''; }
-           END;
-  {           IF DoSomething THEN BEGIN }
-             RestoreArea(4, 2, RetrieveArea);
-             WindMax := RetMax; WindMin := RetMin;
-{           END;  }
-         END;
-         UNTIL (RetrieveKey = 'RETURN') OR (RetrieveKey = 'ESC');
-         DisposeMenu(BigMenu);
-         END;  *)
-
-
-
 
 FUNCTION BlankLine : string;
   VAR
@@ -1159,21 +928,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
                Drug.Storage := 'GLASS' ELSE
              Drug.Storage := 'PLASTIC';          (* <========== *)
 
-             (* IF (FileName = 'liquids.dbf') AND (Glass <> 'T') THEN BEGIN
-               TmpStr1 := Trim(DrugRec[5]); TmpStr2 := Trim(DrugRec[24]);
-               TmpMenuNum := LongerExpDate(TmpStr1, TmpStr2);
-               StorageType := GlassOrPlastic(TmpMenuNum);
-               IF Trim(StorageType) = 'GLASS' THEN BEGIN
-                 Drug.Storage := 'GLASS';
-                 Exp := Trim(DrugRec[5])
-               END ELSE BEGIN
-                 Drug.Storage := 'PLASTIC';
-                 Exp := Trim(DrugRec[24]);
-               END
-             END ELSE BEGIN
-               Exp  := Trim(DrugRec[5]);
-               Drug.Storage := '';
-             END; *)
              OurLot := Config.Prefix+'-'+Config.ShortDate+Config.LotLetter;
              Aux1 := Trim(DrugRec[6]);
              Aux2 := Trim(DrugRec[7]);
@@ -1196,10 +950,7 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
                Max_Conc := Trim(DrugRec[20]);
 
                DiscardDate := Trim(DrugRec[23]);
-(*               IF Trim(DrugRec[22]) = 'T' THEN
-                 ReconInfo.CheckDiscardDate := TRUE
-               ELSE
-                 ReconInfo.CheckDiscardDate := FALSE; *)
+
                IF (Filename = 'inject.dbf') THEN BEGIN
                  Pfl := Trim(DrugRec[9]);
                  Freeze := Trim(DrugRec[10]);
@@ -1223,8 +974,7 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
      Errcode : integer;
 
    BEGIN
-     ExpIntStr := DateString[7]+DateString[8]+DateString[9]+DateString[10]+DateString[1]
-       +DateString[2]+DateString[4]+DateString[5];
+     ExpIntStr := DateString[7]+DateString[8]+DateString[9]+DateString[10]+DateString[1]+DateString[2]+DateString[4]+DateString[5];
      Val(ExpIntStr, ExpInt, Errcode);
      IF Errcode = 0 THEN
        GetDateInt := ExpInt;
@@ -1238,7 +988,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
                           '      Exp. Date:',
                           '    Packaged by:',
                           ' Reconst/Opened:','','','','','','','','','','','','','','','');
-
 
    VAR
      MenuLength : integer;
@@ -1264,10 +1013,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
          'A' : BEGIN  {Overwrites the normal label box, matches that background}
                       {User pressed F5}
                  TextAttr := Colorscheme;
-(* {%} DrawBox(27,5,51,12,LightGray,Blue,15,15,'','','',
-       #218, #196, #191, #179, #192, #217, #176, #177); *)
-
-
                  DrawBox(X,Y,51,12,LightGray,Blue,White,Yellow,#4+' Manufacturer''s Information '+#4,
                    F2Escape,'',#218, #196, #191, #179, #192, #217, #176, #177);
                  TextBackground(Blue);
@@ -1278,10 +1023,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
                  F2Escape,'',#218, #196, #191, #179, #192, #217, #0, #177);
                END;
        END;
-
-(*       DrawBox(27,5,51,10,LightGray,Blue,15,15,'','','',
-       #218, #196, #191, #179, #192, #217, #176, #177); *)
-
                     {50, 12}
        IF UseDrugInfo = 'Y' THEN BEGIN
          CompanyName := DrugInfo^.Company;
@@ -1295,7 +1036,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
          MExpDate  := '00/00/0000';
        END;
        Packager  := '   ';
-
 
        Say(21, 3, CompanyName, White);
        Say(21, 4, LotNumber, White);
@@ -1317,7 +1057,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
            MenuLength := 5
          ELSE
            MenuLength := 4;
-
 
          REPEAT
            IF Not Done THEN BEGIN
@@ -1398,7 +1137,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
 
              END;
 
-
            END
            ELSE BEGIN
              Center('You must complete each field.', 10, Yellow);
@@ -1423,11 +1161,7 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
    END;
 
 
-
-
-
  PROCEDURE GetQty(VAR Dose : string;  X, Y : byte; VAR Done : boolean; VAR Timestr : string);
-
 
      FUNCTION RemoveCommas(Instring : String) : String;
        CONST
@@ -1469,9 +1203,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
      END;
    END; {END of PROCEDURE InsertCommas}
 
-
-
-
    FUNCTION TrimZeros(Instring : string) : string;
      VAR
        Done : boolean;
@@ -1491,7 +1222,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
          TrimZeros := Instring;
        END;
      END; {END of FUNCTION TrimZeros}
-
 
     PROCEDURE CheckDose(VAR DoseNum : real; VAR Drug : drugtype; VAR Nonstandard, CheckConc, CheckUD : boolean);
       Const
@@ -3738,35 +3468,9 @@ PROCEDURE EnterInfo(VAR Info : Labeltype; VAR Entered : boolean ; LoopVar : char
             RestoreArea(30, 6, ReprintArea);
             WindMin := ReprintMin; WindMax := ReprintMax;
           END;
-
-
-(*          PROCEDURE SaveScreen;
-            VAR
-              ScreenArea : areasavertype;
-              CurrentMin, CurrentMax : word;
-              Restart : char;
-            BEGIN
-              CurrentMin := WindMin; CurrentMax := WindMax;
-              Window(1, 1, 80, 25);
-              SaveArea(1, 1, 80, 25, ScreenArea);
-              TextBackground(Black);
-              Clrscr;
-              Writeln('Press ENTER to return to program.');
-              Restart := readkey;
-              RestoreArea(1, 1, ScreenArea);
-              WindMin := CurrentMin; WindMax := CurrentMax;
-            END; *)
-
-
-
   BEGIN
-
-
-
     IF LoopCounter = 0 THEN
       DrugEntered := FALSE;
-    {    For i := 1 to Numoflines DO
-      Style[i] := 0; }
     Clipboard.Entries := 0;
     For i := 1 to 5 DO
       Clipboard.Clips[i] := Blankline;
@@ -3778,23 +3482,14 @@ PROCEDURE EnterInfo(VAR Info : Labeltype; VAR Entered : boolean ; LoopVar : char
     LotUsed := FALSE;
     InsertMode := TRUE;
     Cursorplace := 1;
-
-
     ShowConfig(35, 19);     {30, 16}
     TextAttr := Colorscheme;
-{    DrawBox(20,5,53,10,LightGray,Blue,15,15,'','','',
-       #218, #196, #191, #179, #192, #217, #0, #0); }
-{%} DrawBox(27,5,51,12,LightGray,Blue,15,15,'','','',
-       #218, #196, #191, #179, #192, #217, #176, #177);
-
+{%} DrawBox(27,5,51,12,LightGray,Blue,15,15,'','','', #218, #196, #191, #179, #192, #217, #176, #177);
 
     TextColor(White);
     TextBackground(Blue);
 
     Refresh(2, 2);
-
-
-
     Xloc := 1; Yloc := 1;
 
 REPEAT
@@ -3958,13 +3653,7 @@ REPEAT
     END;
 
   END
-(*  ELSE IF (RETURNKEY = 'CTRLX') THEN BEGIN
-    Writeln(DrugHandle^.DrugInfo);
-    Readln;
-  END *)
-(*  ELSE IF (Returnkey = 'CTRLW') THEN BEGIN
-    PrintString(0, PrinterStatus, '',' ',' ','Y');
-  END *)
+
   ELSE IF (Returnkey = 'CTRLZ') THEN BEGIN
     InfoScreen;
   END
@@ -3973,68 +3662,7 @@ REPEAT
 
   ELSE IF (Returnkey = 'F3') THEN BEGIN
     Menunum := 1;
-(*    GetDoseForm(DrugFile, DrugIndex); {, 28, 6);}
-    IF (DrugFile <> '') THEN BEGIN *)
       GetDrugInfo(DrugHandle^, DrugFile, DrugIndex, 5, 4, DrugEntered, ManuInfoEntered);
-
-(*      IF DRUGENTERED THEN BEGIN
-        With DrugHandle^ DO BEGIN
-          IF DrugFile = 'solids.dbf' THEN BEGIN
-            CharsPerLine := 20;
-            NumOfLines := 7;
-            AddClip(Clipboard, Info[menunum]);
-            Info[Menunum] := Name;
-            Prune(Info[MenuNum], Tempstring, CharsPerLine);
-            Info[Menunum] := Pad(Info[MenuNum], CharsPerLine);
-            AddClip(Clipboard, Info[menunum + 1]);
-            Info[Menunum + 1] := Form+' '+Dose;
-            Insert(Tempstring, Info[MenuNum + 1], 1);
-            Prune(Info[MenuNum + 1], Tempstring2, CharsPerLine);
-            Info[Menunum+1] := Pad(Info[MenuNum+1], CharsPerLine);
-
-            AddClip(Clipboard, Info[Menunum + 2]);
-            Info[Menunum + 2] := Pad('LOT: '+Config.Prefix+'-'+Config.ShortDate+Config.LotLetter, CharsPerLine);
-
-            Insert(Tempstring2, Info[MenuNum + 2], 1);
-            Info[MenuNum+2] := Trim(Info[Menunum+2]);
-            Info[Menunum+2] := Pad(Info[MenuNum+2], CharsPerLine);
-
-            AddClip(Clipboard, Info[Numoflines - 3]);
-            Info[Numoflines - 1] := Pad(Aux1, CharsPerLine);
-            AddClip(Clipboard, Info[Numoflines - 2]);
-            Info[Numoflines] := Pad(Aux2, CharsPerLine);
-
-            AddClip(Clipboard, Info[Numoflines - 1]);
-            Info[Numoflines - 1] := Pad('MCVH Pharmacy', CharsPerLine);
-            AddClip(Clipboard, Info[Numoflines]);
-            Info[Numoflines] := Pad('EXP: '+ExpDate, CharsPerLine);
-          END ELSE BEGIN
-            AddClip(Clipboard, Info[menunum]);
-            Info[Menunum] := Name+' '+Form;
-            Prune(Info[MenuNum], Tempstring, CharsPerLine);
-            Info[Menunum] := Pad(Info[MenuNum], CharsPerLine);
-
-            AddClip(Clipboard, Info[menunum + 1]);
-            Info[Menunum + 1] := Dose;
-            Insert(Tempstring, Info[MenuNum + 1], 1);
-            Prune(Info[MenuNum + 1], Tempstring2, CharsPerLine);
-            Info[Menunum+1] := Pad(Info[MenuNum+1], CharsPerLine);
-
-            AddClip(Clipboard, Info[Menunum + 2]);
-            Info[Menunum + 2] :=
-              Pad('LOT: '+Config.Prefix+'-'+Config.ShortDate+Config.LotLetter+' EXP: '+ExpDate, CharsPerLine);
-            Insert(Tempstring2, Info[MenuNum + 2], 1);
-            Info[MenuNum+2] := Trim(Info[Menunum+2]);
-            Info[Menunum+2] := Pad(Info[MenuNum+2], CharsPerLine);
-
-            AddClip(Clipboard, Info[Numoflines - 1]);
-            Info[Numoflines - 1] := Pad(Aux1, CharsPerLine);
-            AddClip(Clipboard, Info[Numoflines]);
-            Info[Numoflines] := Pad(Aux2, CharsPerLine);
-          END;
-        END;
-      END;  *)
-
 
      {This is the working version, commenting it out to save an unaltered copy}
       IF DRUGENTERED THEN BEGIN
@@ -4128,11 +3756,6 @@ REPEAT
   ELSE IF Returnkey = 'ALT3' THEN Menunum := 3
   ELSE IF Returnkey = 'ALT4' THEN Menunum := 4
   ELSE IF Returnkey = 'ALT5' THEN Menunum := 5
-  (*  IF Returnkey = 'ALT6' THEN Menunum := 6;
-  IF Returnkey = 'ALT7' THEN Menunum := 7;
-  IF Returnkey = 'ALT8' THEN Menunum := 8;
-  IF Returnkey = 'ALT9' THEN Menunum := 9;
-  IF Returnkey = 'ALT0' THEN Menunum := 10; *)
 
   ELSE IF Returnkey = 'ESC' THEN BEGIN
     Abort('S', Quit);
@@ -4798,111 +4421,111 @@ BEGIN                 {MAIN PROGRAM}
   If it doesn't exist, it creates it and runs the program.
   Last thing it does before exiting is delete the pm.pid
   file. *)
-  FindFirst('C:\package\pm.pid', Archive, DirInfo);
-  IF DosError = 0 THEN BEGIN
-    Writeln('Pac-Manager is already running in another window.');
-    Writeln('Please switch to that window.');
-    Writeln('Press ENTER to return to Dos.');
-    Readln;
-  END ELSE BEGIN
-  Assign(PidFile, 'C:\package\pm.pid');
-  Rewrite(PidFile);
-  GetDate(y,mon,day,dow);
-  GetTime(h,min,s,hund);
-  Writeln(PidFile, 'Started  ',Mon,'/',Day,'/',Y,' at ',h,':',min,'.',s);
-  Close(PidFile);
-
-  GetPrinterConfig('printdrv.dbf', PrinterConfig);
-  TextBackground(LightGray);
-  TextColor(Black);
-  ColorScheme := TextAttr;  
-  Quit := FALSE;
-  (* NumOfLines := 5; CharsPerLine := 40; *)
-  REPEAT
-    DrugHandle := NIL;
-    New(DrugHandle);
-    InitDrugHandle(DrugHandle^);
-    InitManu(Manu);
-(*    With ReconInfo DO BEGIN
-     CheckDiscardDate := FALSE;
-     DiscardDate := '00/00/0000';
-    END; *)
-    For i := 1 to (NumofLines - 1) DO BEGIN
-      LabelInfo[i] := Blankline;
-    END;
-(*    LabelInfo[NumOfLines] := Pad(Config.MCVName, CharsPerLine); *)
-    InfoEntered := FALSE;
-    Screen(Title, Version, Black, LightGray, Blue);
-    TextAttr := Colorscheme;
-
-(*Interactive = 'Y', prompt for department, this is for Inpatient, other areas always use same dept.*)
-(*    If Paramstr(1) <> ''
-       Then Interactive := 'B'   {B = beginning. N for not, Y for interactive}
-     Else *)
-    Interactive := 'N';
-    GetSetDate({CurrentDept, ShortDate, Prefix, LotLetter, JulianDate,} Config, Interactive);
-    LabelInfo[NumOfLines] := Pad(Config.MCVName, CharsPerLine);
-    LoopCounter := 0;
-    REPEAT
-       ManuInfoEntered := FALSE;
-       REPEAT
-         TextAttr := Colorscheme;
-         DrawBox(2,3,21,21,DarkGray,Cyan,White,White,'','',
-           '',#218, #196, #191, #179, #192, #217, #176, #177);
-         TextBackground(Cyan);
-         FunctionKey(2, 2);
-         TextBackground(Blue);
-         EnterInfo(LabelInfo, InfoEntered, 'Y', DrugEntered, ManuInfoEntered, Retrieved,
-            LotUsed, LabelFileName, Recnum, Quit, DrugFile (*, ReconInfo.CheckDiscardDate*));
-         IF Not QUIT THEN BEGIN
-           IF DrugEntered THEN Inc(LoopCounter);
-             IF (InfoEntered) THEN BEGIN
-               Center('Edit info? [Y/N]', 8, Yellow);
-               Edit := Upcase(readkey);
-             END ELSE
-               Edit := 'N';
-         END ELSE
-           Edit := 'N';
-
-       UNTIL Edit = 'N';
-       IF NOT Quit THEN BEGIN
-         PrintLabels(LabelInfo, 'LPT1');
-         If NumberOfPrints <> 0 THEN BEGIN
-           Say(2,2,'Print this label again? [Y/N]   ', White);
-           MoreLabels := Upcase(Readkey);
-         END ELSE
-           MoreLabels := 'N';
-       END ELSE
-         MoreLabels := 'N';
-
-    UNTIL MoreLabels = 'N';
-
-    IF Not QUIT THEN BEGIN
-
-      IF DrugEntered OR LotUsed OR (LoopCounter > 0) THEN BEGIN
-        UpdateConfig(Config, {Config.CurrentDept,} DateChanged);
-        WriteOutput(LabelInfo, numberofprints, 'package.dbf', DrugEntered, DrugHandle);
-        IF DrugEntered THEN BEGIN
-          WriteManuInfo(Manu, DrugFile, RecNum, DrugHandle);
-        END;
-      END;
-     IF Not DrugEntered THEN BEGIN
-        SaveLabel(LabelInfo, Config.Prefix);
-(*        Say(3, 5,'Add to statistics database? [Y/N]        ', White);
-        Dbfinfo := Upcase(readkey);
-        If Dbfinfo = 'Y' THEN BEGIN
-          WriteOutput(LabelInfo, numberofprints, 'freeform.dbf', Manuinfoentered, DrugHandle);
-        END; *)
-      END;
-    END;
-    Dispose(DrugHandle);
-  UNTIL Quit;
-  DeleteFile('C:\package\pm.pid');
-  Window(1,1,80,25);
-  TextColor(LightGray);
-  TextBackground(Black);
-  Clrscr;
-  END;
+//  FindFirst('C:\package\pm.pid', Archive, DirInfo);
+//  IF DosError = 0 THEN BEGIN
+//    Writeln('Pac-Manager is already running in another window.');
+//    Writeln('Please switch to that window.');
+//    Writeln('Press ENTER to return to Dos.');
+//    Readln;
+//  END ELSE BEGIN
+//  Assign(PidFile, 'C:\package\pm.pid');
+//  Rewrite(PidFile);
+//  GetDate(y,mon,day,dow);
+//  GetTime(h,min,s,hund);
+//  Writeln(PidFile, 'Started  ',Mon,'/',Day,'/',Y,' at ',h,':',min,'.',s);
+//  Close(PidFile);
+//
+//  GetPrinterConfig('printdrv.dbf', PrinterConfig);
+//  TextBackground(LightGray);
+//  TextColor(Black);
+//  ColorScheme := TextAttr;
+//  Quit := FALSE;
+//  (* NumOfLines := 5; CharsPerLine := 40; *)
+//  REPEAT
+//    DrugHandle := NIL;
+//    New(DrugHandle);
+//    InitDrugHandle(DrugHandle^);
+//    InitManu(Manu);
+//(*    With ReconInfo DO BEGIN
+//     CheckDiscardDate := FALSE;
+//     DiscardDate := '00/00/0000';
+//    END; *)
+//    For i := 1 to (NumofLines - 1) DO BEGIN
+//      LabelInfo[i] := Blankline;
+//    END;
+//(*    LabelInfo[NumOfLines] := Pad(Config.MCVName, CharsPerLine); *)
+//    InfoEntered := FALSE;
+//    Screen(Title, Version, Black, LightGray, Blue);
+//    TextAttr := Colorscheme;
+//
+//(*Interactive = 'Y', prompt for department, this is for Inpatient, other areas always use same dept.*)
+//(*    If Paramstr(1) <> ''
+//       Then Interactive := 'B'   {B = beginning. N for not, Y for interactive}
+//     Else *)
+//    Interactive := 'N';
+//    GetSetDate({CurrentDept, ShortDate, Prefix, LotLetter, JulianDate,} Config, Interactive);
+//    LabelInfo[NumOfLines] := Pad(Config.MCVName, CharsPerLine);
+//    LoopCounter := 0;
+//    REPEAT
+//       ManuInfoEntered := FALSE;
+//       REPEAT
+//         TextAttr := Colorscheme;
+//         DrawBox(2,3,21,21,DarkGray,Cyan,White,White,'','',
+//           '',#218, #196, #191, #179, #192, #217, #176, #177);
+//         TextBackground(Cyan);
+//         FunctionKey(2, 2);
+//         TextBackground(Blue);
+//         EnterInfo(LabelInfo, InfoEntered, 'Y', DrugEntered, ManuInfoEntered, Retrieved,
+//            LotUsed, LabelFileName, Recnum, Quit, DrugFile (*, ReconInfo.CheckDiscardDate*));
+//         IF Not QUIT THEN BEGIN
+//           IF DrugEntered THEN Inc(LoopCounter);
+//             IF (InfoEntered) THEN BEGIN
+//               Center('Edit info? [Y/N]', 8, Yellow);
+//               Edit := Upcase(readkey);
+//             END ELSE
+//               Edit := 'N';
+//         END ELSE
+//           Edit := 'N';
+//
+//       UNTIL Edit = 'N';
+//       IF NOT Quit THEN BEGIN
+//         PrintLabels(LabelInfo, 'LPT1');
+//         If NumberOfPrints <> 0 THEN BEGIN
+//           Say(2,2,'Print this label again? [Y/N]   ', White);
+//           MoreLabels := Upcase(Readkey);
+//         END ELSE
+//           MoreLabels := 'N';
+//       END ELSE
+//         MoreLabels := 'N';
+//
+//    UNTIL MoreLabels = 'N';
+//
+//    IF Not QUIT THEN BEGIN
+//
+//      IF DrugEntered OR LotUsed OR (LoopCounter > 0) THEN BEGIN
+//        UpdateConfig(Config, {Config.CurrentDept,} DateChanged);
+//        WriteOutput(LabelInfo, numberofprints, 'package.dbf', DrugEntered, DrugHandle);
+//        IF DrugEntered THEN BEGIN
+//          WriteManuInfo(Manu, DrugFile, RecNum, DrugHandle);
+//        END;
+//      END;
+//     IF Not DrugEntered THEN BEGIN
+//        SaveLabel(LabelInfo, Config.Prefix);
+//(*        Say(3, 5,'Add to statistics database? [Y/N]        ', White);
+//        Dbfinfo := Upcase(readkey);
+//        If Dbfinfo = 'Y' THEN BEGIN
+//          WriteOutput(LabelInfo, numberofprints, 'freeform.dbf', Manuinfoentered, DrugHandle);
+//        END; *)
+//      END;
+//    END;
+//    Dispose(DrugHandle);
+//  UNTIL Quit;
+//  DeleteFile('C:\package\pm.pid');
+//  Window(1,1,80,25);
+//  TextColor(LightGray);
+//  TextBackground(Black);
+//  Clrscr;
+//  END;
 
 END.
 

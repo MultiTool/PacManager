@@ -218,13 +218,8 @@ FUNCTION DecryptPassword(Instring : string) : string;
 
 FUNCTION IsBlank(Instring : string) : boolean;
 
-
-
-(* PROCEDURE UNDERLINE (VAR Message : string; VAR Destination : file; LF : char); *)
-
 Implementation
 {**********************************************************************}
-
 
 PROCEDURE SAY(Xloc, Yloc : integer; Message : Messagetype; MessageColor : byte);
   VAR
@@ -249,7 +244,6 @@ PROCEDURE SAY(Xloc, Yloc : integer; Message : Messagetype; MessageColor : byte);
           CutPoint := i;
         END ELSE
           Dec(i, 1);
-
       END;
       Tempstring := Copy(Message, CutPoint + 1, (Length(Message) - Cutpoint + 1));
       Delete(Message, CutPoint + 1, (Length(Message) - Cutpoint + 1));
@@ -2562,25 +2556,23 @@ FUNCTION st(instring:STRING;newlength:BYTE):STRING;
   END;
 
 PROCEDURE Center(Message : MessageType; Ypos : byte; MessageColor : byte);
-    VAR
-      CenterPos,
-      Width,
-      CalcPos,
-      Offset : byte;
-      OldColors : word;
-    BEGIN
-      OldColors := TextAttr;
-      TextColor(MessageColor);
-(*      IF Length(Trim(Message)) <> 0 THEN
-        Message := Trim(Message); *)
-      Width := Lo(WindMax) - Lo(WindMin);
-      Offset := Length(Message) DIV 2;
-      CenterPos := Width DIV 2;
-      CalcPos := CenterPos - Offset;
-      GoToXY(CalcPos, Ypos);
-      Write(Message);
-      TextAttr := OldColors;
-    END;
+  VAR
+    CenterPos,
+    Width,
+    CalcPos,
+    Offset : byte;
+    OldColors : word;
+  BEGIN
+    OldColors := TextAttr;
+    TextColor(MessageColor);
+    Width := Lo(WindMax) - Lo(WindMin);
+    Offset := Length(Message) DIV 2;
+    CenterPos := Width DIV 2;
+    CalcPos := CenterPos - Offset;
+    GoToXY(CalcPos, Ypos);
+    Write(Message);
+    TextAttr := OldColors;
+  END;
 
 PROCEDURE DialogueBox(VAR Reply : string; Prompt : string; VAR Colorscheme : byte);
   CONST
@@ -2663,8 +2655,6 @@ BEGIN
 END;
 
 PROCEDURE GetPrinterConfig(Filename : string; VAR Config : PrinterConfigType);
-
-
   VAR
     DirInfo: SearchRec;
     ConfigSpec : dbfheadertype;
@@ -2696,8 +2686,6 @@ PROCEDURE GetPrinterConfig(Filename : string; VAR Config : PrinterConfigType);
         Readln;
       END;
     END;
-
-
   END;
 
 

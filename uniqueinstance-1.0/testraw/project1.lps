@@ -3,8 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="9"/>
-    <BuildModes Active="Default"/>
-    <Units Count="3">
+    <Units Count="2">
       <Unit0>
         <Filename Value="project1.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -12,31 +11,21 @@
         <UsageCount Value="20"/>
       </Unit0>
       <Unit1>
-        <Filename Value="mainunit.pas"/>
+        <Filename Value="unit1.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="MainForm"/>
+        <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="MainUnit"/>
+        <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="39"/>
-        <CursorPos X="1" Y="60"/>
+        <TopLine Value="1"/>
+        <CursorPos X="73" Y="16"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="pacmanager.pas"/>
-        <UnitName Value="PacManager"/>
-        <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="56"/>
-        <CursorPos X="1" Y="56"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
-      </Unit2>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
