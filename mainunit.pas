@@ -45,7 +45,7 @@ begin                 {MAIN PROGRAM}
   If it doesn't exist, it creates it and runs the program.
   Last thing it does before exiting is delete the pm.pid
   file. *)
-  if InstanceRunning then begin
+  IF InstanceRunning THEN BEGIN
     Writeln('Pac-Manager is already running in another window.');
     Writeln('Please switch to that window.');
     Writeln('Press ENTER to return to Dos.');

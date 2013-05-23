@@ -832,12 +832,10 @@ FUNCTION BlankLine : string;
     Tempstring := '';
     For i := 1 to CharsPerLine DO
       Tempstring := Tempstring + ' ';
-
-      Blankline := Tempstring;
-
+    Blankline := Tempstring;
   END;
 
-  PROCEDURE GetDrug(Filename : string; {VAR DrugRec : recordarraytype;}
+  PROCEDURE GetDrug(Filename : string;
     VAR Recnum : longint; VAR NumOfFields : integer; VAR Drug : drugtype; VAR DrugGotten : boolean);
     VAR
       Results : string;
@@ -856,7 +854,6 @@ FUNCTION BlankLine : string;
         VAR
           GorPArea : Areasavertype;
           GorPMin, GorPMax : word;
-(*          GorPNum : integer; *)
           GorPKey : string;
         BEGIN
           SaveArea(32, 6, 44, 8, GorPArea);
@@ -1068,8 +1065,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
                          ReadString(21, 3, 'C', CompanyName, Length(CompanyName), Manukey, White, Black, EchoInput);
                          Inc(ManuMenuNum);
                          DrugInfo^.Company := CompanyName;
-
-
                        END;
                      END;
                  2 : BEGIN
@@ -1077,7 +1072,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
                          ReadString(21, 4, 'C', LotNumber, Length(LotNumber), Manukey, White, Black, EchoInput);
                          Inc(ManuMenuNum);
                          DrugInfo^.Lot := LotNumber;
-
                        END;
                      END;
                  3 : BEGIN
@@ -1085,7 +1079,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
                          Getchunky(21, 5, MExpDate, Black, LightGray, DateFormat, Manukey);
                          Inc(ManuMenuNum);
                          DrugInfo^.Mfg_exp := MExpDate;
-
                        END;
                      END;
                  4 : BEGIN
@@ -1215,7 +1208,6 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
              IF Instring[Length(instring)] = '.' THEN
                Done := TRUE;
              Delete(Instring, Length(instring), 1);
-
            END ELSE
              Done := TRUE;
          END;
@@ -4183,10 +4175,7 @@ VAR
   j : integer;
   targetrec : integer;
 
-
-
 BEGIN
-
  opendbasefile(listfilespecs, FName, listfileresults);
  IF listfileresults = 'GOOD' THEN BEGIN
    IF RETRIEVED THEN
@@ -4201,8 +4190,7 @@ BEGIN
    Say(3, WhereY + 2, 'Sorting database. Please wait. . .', Yellow);
    DBFSort(listfilespecs, 1);
    closedbasefile(listfilespecs);
- END
- ELSE BEGIN
+ END ELSE BEGIN
    TextColor(Red);
    Say(3, WhereY, 'Error - information not written to database.', Red);
    Say(3, WhereY + 1, 'File = '+FName, Red);
