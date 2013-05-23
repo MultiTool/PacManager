@@ -5,8 +5,8 @@ unit MainUnit;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, UniqueInstanceRaw,
-  ABUtil2, NEODBFIO, mouser, Print, Dos, Crt, PacManager;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  UniqueInstanceRaw,ABUtil2, NEODBFIO, mouser, Print, Dos, Crt, PMUnit;
 
 type
 
@@ -14,6 +14,7 @@ type
 
   TMainForm = class(TForm)
     procedure FormCreate(Sender: TObject);
+    // procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -26,7 +27,6 @@ var
 implementation
 
 {$R *.lfm}
-
 procedure Init;
 begin
   GetPrinterConfig('printdrv.dbf', PrinterConfig);
@@ -61,8 +61,8 @@ begin                 {MAIN PROGRAM}
       New(DrugHandle);
       InitDrugHandle(DrugHandle^);
       InitManu(Manu);
-      For i := 1 to (NumofLines - 1) DO BEGIN
-        LabelInfo[i] := Blankline;
+      For ICnt := 1 to (NumofLines - 1) DO BEGIN
+        LabelInfo[ICnt] := Blankline;
       END;
       InfoEntered := FALSE;
       Screen(Title, Version, Black, LightGray, Blue);

@@ -128,8 +128,9 @@ TYPE
   {************************************************************}
   VAR cnt1 : INTEGER; outstr : STRING;
   BEGIN
+    SetLength(outstr, veclength);
     MOVE(rawbytes[index],outstr[1],veclength);
-    setlength(outstr, veclength); copystr:=outstr;
+    copystr:=outstr;
   END;
 
 

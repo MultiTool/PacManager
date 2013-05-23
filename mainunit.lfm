@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 457
-  Height = 419
-  Top = 159
-  Width = 672
+  Left = 313
+  Height = 240
+  Top = 218
+  Width = 320
   Caption = 'MainForm'
   OnCreate = FormCreate
   LCLVersion = '1.0.8.0'

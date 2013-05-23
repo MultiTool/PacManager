@@ -1,4 +1,4 @@
-program project1;
+program PacManager;
 
 {$mode objfpc}{$H+}
 
@@ -7,12 +7,12 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, MainUnit, lclextensions_package, uniqueinstance_package;
+  Forms, MainUnit, lclextensions_package, uniqueinstance_package
+  { you can add units after this };
 
 {$R *.res}
 
 begin
-  Application.Title:='PacManager';
   RequireDerivedFormResource := True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);

@@ -1,5 +1,5 @@
 {$R+}
-Unit PacManager;
+Unit PMUnit;
 (* 1/14/2004 - adding 'M10' department, adding another field to pm_dbf.cfg
 have to push the other fields back one. Knock wood *)
 
@@ -169,7 +169,7 @@ VAR
    NumberOfLabels : string;
    NumberOfPrints : integer;
    Dbfinfo, Loop, Del : char;
-   i : integer;
+   ICnt : integer;
    MoreLabels : char;
    LengthMenu, ListMenuNum : integer;
    ColorScheme : byte;
@@ -741,8 +741,8 @@ PROCEDURE Choosefromprompt(VAR menu:prompttype; menusize,xloc,yloc,Wdt,Hgt:INTEG
   BEGIN
      TextColor(White); TextBackground(Blue);
      Xloc := 2; Yloc := 2;
-     For i := 1 to 5 DO BEGIN
-       Say(Xloc, Yloc, Freeinfo[i], White);
+     For ICnt := 1 to 5 DO BEGIN
+       Say(Xloc, Yloc, Freeinfo[ICnt], White);
        inc(Yloc);
      END;
 
@@ -1243,7 +1243,7 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
         OldColor : Word;
         MaxDoseNum,
         MinDoseNum : real;
-        CompChar : char; {I for inclusive, E for exclusive, the first character
+        CompChar : char; {ICnt for inclusive, E for exclusive, the first character
                           of the MIN/MAX field.  E4 means >4 or <4, I4 means >=4, <=4}
       BEGIN
         SaveArea(10, 10, 55, 8, CheckDoseBackground);
@@ -1441,8 +1441,8 @@ EVERYTHING IS PACKAGED IN PLASTIC *)
       Done := FALSE;
       Timestr := '';
       TextColor(Yellow);
-      For i := 1 to 6 DO
-        Say(X, Y + i, DrugInfo[i], Yellow);
+      For ICnt := 1 to 6 DO
+        Say(X, Y + ICnt, DrugInfo[ICnt], Yellow);
       TextColor(White);
 
       With DrugHandle^ DO BEGIN
@@ -2141,7 +2141,7 @@ END;
 (*  PROCEDURE UpdateConfig(VAR Config : configtype; CurrentDept : integer; VAR DateChanged : boolean);
     VAR
       outfile : text;
-      i : byte;
+      ICnt : byte;
     BEGIN
       With Config DO BEGIN
         IF (NumberOfPrints <> 0) OR
@@ -2151,8 +2151,8 @@ END;
           Assign(outfile, 'pm.cfg');
           Rewrite(outfile);
           Writeln(outfile, Date);
-          For i := 1 to NumOfDepts DO
-            Writeln(outfile, Lotnumbers[i]);
+          For ICnt := 1 to NumOfDepts DO
+            Writeln(outfile, Lotnumbers[ICnt]);
           Writeln(outfile, defaultdept);
           Writeln(outfile, labelsperrow);
           Close(outfile);
@@ -2265,19 +2265,19 @@ END;
     PROCEDURE ChangeLot(VAR Config : configtype; NewLot : string; VAR Found : boolean; LotToChange : byte);
 
       VAR
-        i : word;
+        ICnt : word;
 
 
       BEGIN
         NewLot := Trim(NewLot);
-        i := 1;
-        While not(found) AND (i <= 78) do begin
-          IF LotLetters[i] = NewLot THEN BEGIN
+        ICnt := 1;
+        While not(found) AND (ICnt <= 78) do begin
+          IF LotLetters[ICnt] = NewLot THEN BEGIN
             Found := TRUE;
           END ELSE
-            inc(i);
+            inc(ICnt);
         END;
-        IF Found THEN Config.LotNumbers[LotToChange] := i;
+        IF Found THEN Config.LotNumbers[LotToChange] := ICnt;
 
       END;
 
@@ -2312,12 +2312,12 @@ END;
       While NOT EOF(infile) DO BEGIN
         Readln(infile, OldDate);
         OldDate := Trim(OldDate);
-        i := 1;
-        While (i <= NumOfDepts) AND Not EOF(infile) DO BEGIN
+        ICnt := 1;
+        While (ICnt <= NumOfDepts) AND Not EOF(infile) DO BEGIN
           Readln(infile, Tempstr);
           Tempstr := Trim(Tempstr);
-          Val(Tempstr, LotNumbers[i], Errcode);
-          inc(i);
+          Val(Tempstr, LotNumbers[ICnt], Errcode);
+          inc(ICnt);
         END;
         IF Not EOF(INFILE) THEN BEGIN
           Readln(infile, Tempstr);
@@ -2380,8 +2380,8 @@ END;
                     Getchunky(Xpos + 15, Ypos + 3, Date, 1, 15, Date, Returnkey);
                     IF Date <> OldDate THEN BEGIN
                       DateChanged := TRUE;
-                      For i := 1 to NumOfDepts DO
-                        LotNumbers[i] := 1;
+                      For ICnt := 1 to NumOfDepts DO
+                        LotNumbers[ICnt] := 1;
                       LotLetter := GetLotLetter(Config.LotNumbers[CurrentDept]);
                       Say(Xpos + 15, Ypos+6, LotLetter, LightGray);
                     END;
@@ -2571,11 +2571,11 @@ END;
       Closedbasefile(ConfigSpec);
       OldDate := ConfigRec[1];
 (* was 17 *)      MCVName := Trim(ConfigRec[18]);
-      i := 1;
-      While (i <= NumOfDepts) DO BEGIN
-          Tempstr := Trim(ConfigRec[i + 1]);
-          Val(Tempstr, LotNumbers[i], Errcode);
-          inc(i);
+      ICnt := 1;
+      While (ICnt <= NumOfDepts) DO BEGIN
+          Tempstr := Trim(ConfigRec[ICnt + 1]);
+          Val(Tempstr, LotNumbers[ICnt], Errcode);
+          inc(ICnt);
         END;
         { default department counter was 9, is now 10 - changed to 11 when M10 added
         Tempstr := Trim(ConfigRec[9]); }
@@ -2592,12 +2592,12 @@ END;
       While NOT EOF(infile) DO BEGIN
         Readln(infile, OldDate);
         OldDate := Trim(OldDate);
-        i := 1;
-        While (i <= NumOfDepts) AND Not EOF(infile) DO BEGIN
+        ICnt := 1;
+        While (ICnt <= NumOfDepts) AND Not EOF(infile) DO BEGIN
           Readln(infile, Tempstr);
           Tempstr := Trim(Tempstr);
-          Val(Tempstr, LotNumbers[i], Errcode);
-          inc(i);
+          Val(Tempstr, LotNumbers[ICnt], Errcode);
+          inc(ICnt);
         END;
         IF Not EOF(INFILE) THEN BEGIN
           Readln(infile, Tempstr);
@@ -2666,8 +2666,8 @@ END;
                     Getchunky(Xpos + 15, Ypos + 3, Date, 1, 15, DateFormat, Returnkey);
                     IF Date <> OldDate THEN BEGIN
                       DateChanged := TRUE;
-                      For i := 1 to NumOfDepts DO
-                        LotNumbers[i] := 1;
+                      For ICnt := 1 to NumOfDepts DO
+                        LotNumbers[ICnt] := 1;
                       LotLetter := GetLotLetter(Config.LotNumbers[CurrentDept]);
                       Say(Xpos + 15, Ypos+6, LotLetter, LightGray);
                     END;
@@ -2795,11 +2795,11 @@ END;
       Opendbasefile(ConfigSpec, 'pm_cfg.dbf', OpenResult);
       Readdbfrecord(ConfigSpec, 1, ConfigRec, OpenResult);
       Date := Trim(ConfigRec[1]);
-      i := 1;
-      While (i <= NumOfDepts) DO BEGIN
-          Tempstr := Trim(ConfigRec[i + 1]);
-          Val(Tempstr, LotNumbers[i], Errcode);
-          inc(i);
+      ICnt := 1;
+      While (ICnt <= NumOfDepts) DO BEGIN
+          Tempstr := Trim(ConfigRec[ICnt + 1]);
+          Val(Tempstr, LotNumbers[ICnt], Errcode);
+          inc(ICnt);
       END;
       Tempstr := Trim(ConfigRec[9]);
       Val(Tempstr, DefaultDept, Errcode);
@@ -2852,8 +2852,8 @@ END;
                     Getchunky(Xpos + 15, Ypos + 3, Date, 1, 15, Date, Returnkey);
                     IF Date <> OldDate THEN BEGIN
                       DateChanged := TRUE;
-                      For i := 1 to NumOfDepts DO
-                        LotNumbers[i] := 1;
+                      For ICnt := 1 to NumOfDepts DO
+                        LotNumbers[ICnt] := 1;
                       LotLetter := GetLotLetter(Config.LotNumbers[CurrentDept]);
                       Say(Xpos + 15, Ypos+6, LotLetter, LightGray);
                     END;
@@ -3472,8 +3472,8 @@ PROCEDURE EnterInfo(VAR Info : Labeltype; VAR Entered : boolean ; LoopVar : char
     IF LoopCounter = 0 THEN
       DrugEntered := FALSE;
     Clipboard.Entries := 0;
-    For i := 1 to 5 DO
-      Clipboard.Clips[i] := Blankline;
+    For ICnt := 1 to 5 DO
+      Clipboard.Clips[ICnt] := Blankline;
     Menukey := '';
     Returnkey := '';
     MenuNum := 1;
@@ -3495,16 +3495,15 @@ PROCEDURE EnterInfo(VAR Info : Labeltype; VAR Entered : boolean ; LoopVar : char
 REPEAT
   If InsertMode THEN Say(9,7,'INSERT',Yellow)
   ELSE Say(9, 7, '      ', Blue);
-  newreadstring(Xloc + 8,Yloc + menunum,'D',Info[menunum],  {'D' doesn't mean anything, not 'C', lower case is allowed}
-    Length(Info[menunum]),ReturnKey, CharsPerLine, WrapAllowed, HotZone, Cursorplace, InsertMode
-    (*, 'Press any key to return to Pac-Manager'*));
+    {'D' doesn't mean anything, not 'C', lower case is allowed}
+    newreadstring(Xloc + 8,Yloc + menunum,'D',Info[menunum], Length(Info[menunum]),ReturnKey, CharsPerLine, WrapAllowed, HotZone, Cursorplace, InsertMode);
   If (Returnkey = 'DOWN') OR (Returnkey = 'RETURN') OR (Returnkey = 'WRAP') THEN
     Inc(menunum)
   ELSE If (Returnkey = 'UP') THEN
     Dec(menunum)
   ELSE If (Returnkey = 'CTRLA') THEN BEGIN
-    For i := 1 to Numoflines DO
-      Info[i] := CenterLine(Info[i], CharsPerLine);
+    For ICnt := 1 to Numoflines DO
+      Info[ICnt] := CenterLine(Info[ICnt], CharsPerLine);
   END
 
 
@@ -3512,21 +3511,21 @@ REPEAT
     Info[Menunum] := Blankline
   ELSE IF (Returnkey = 'CTRLDEL') THEN BEGIN
      AddClip(Clipboard, Info[MenuNum]);
-    For i := MenuNum to NumOfLines - 1 DO
-      Info[i] := Info[i + 1];
+    For ICnt := MenuNum to NumOfLines - 1 DO
+      Info[ICnt] := Info[ICnt + 1];
     Info[NumOfLines] := Blankline;
   END
   ELSE IF (Returnkey = 'CTRLE') THEN BEGIN
-    For i := 1 to NumOfLines DO
-      Info[i] := Blankline;
+    For ICnt := 1 to NumOfLines DO
+      Info[ICnt] := Blankline;
     DrugEntered := FALSE;
     ManuInfoEntered := FALSE;
   END
   ELSE If (Returnkey = 'CTRLINS') THEN BEGIN
     AddClip(Clipboard, Info[NumOfLines]);
     Info[NumOfLines] := BlankLine;
-    For i := NumOfLines - 1 DOWNTO MenuNum DO
-      Info[i + 1] := Info[i];
+    For ICnt := NumOfLines - 1 DOWNTO MenuNum DO
+      Info[ICnt + 1] := Info[ICnt];
     Info[MenuNum] := BlankLine;
   END
 
@@ -3542,18 +3541,18 @@ REPEAT
       TextBackground(Blue);
 
       TextColor(White);
-      For i := 1 to 5 DO BEGIN
-        GotoXY(4, 1 + i);
-        Write(i,' ', Clipboard.Clips[i]);
+      For ICnt := 1 to 5 DO BEGIN
+        GotoXY(4, 1 + ICnt);
+        Write(ICnt,' ', Clipboard.Clips[ICnt]);
       END;
       TextColor(Yellow);
       Say(2, 7, 'Enter line number to paste, any other key to exit', Yellow);
       TextColor(Black);
       Ch := Readkey;
-      Val(Ch, i, errcode);
-      CASE i OF
+      Val(Ch, ICnt, errcode);
+      CASE ICnt OF
        1..5 :  BEGIN
-                 Insert(Trim(Clipboard.Clips[i])+' ', Info[MenuNum], Cursorplace);
+                 Insert(Trim(Clipboard.Clips[ICnt])+' ', Info[MenuNum], Cursorplace);
                  IF Length(Info[Menunum]) > CharsPerline THEN BEGIN
                    Tempstring := Copy(Info[Menunum], CharsPerline + 1, Length(Info[MenuNum]));
                    Tempstring := Pad(Tempstring, CharsPerline);
@@ -3579,8 +3578,8 @@ REPEAT
     Tempstring := Pad(Tempstring, CharsPerLine);
     AddClip(Clipboard, Tempstring);
     OldLength := Length(Info[menunum]);
-    For i := 1 to cursorplace - 1 DO
-      info[menunum][i] := ' ';
+    For ICnt := 1 to cursorplace - 1 DO
+      info[menunum][ICnt] := ' ';
     Info[menunum] := trim(Info[menunum]);
     Info[menunum] := Pad(Info[menunum], Oldlength);
   END
@@ -3590,8 +3589,8 @@ REPEAT
     Inc(Cursorplace);
   END
   ELSE IF Returnkey = 'CTRLJ' THEN BEGIN
-    For i := 1 to 5 DO
-      Info[i] := RightJustify(Info[i], CharsPerLine);
+    For ICnt := 1 to 5 DO
+      Info[ICnt] := RightJustify(Info[ICnt], CharsPerLine);
   END
   ELSE IF Returnkey = 'CTRLL' THEN BEGIN
      Tempstring := '';
@@ -3628,17 +3627,17 @@ REPEAT
     Tempstring := Copy(Info[menunum], cursorplace, Length(info[menunum]));
     Tempstring := Pad(Tempstring, CharsPerLine);
     AddClip(Clipboard, Tempstring);
-    For i := cursorplace to length(Info[MenuNum]) DO
-      Info[Menunum][i] := ' ';
+    For ICnt := cursorplace to length(Info[MenuNum]) DO
+      Info[Menunum][ICnt] := ' ';
   END
   ELSE IF (Returnkey = 'CTRLS') THEN BEGIN
     DisplaySDoses;
   END
 
   ELSE IF (Returnkey = 'CTRLU') THEN BEGIN  {UN-CENTER}
-    For i := 1 to numoflines DO BEGIN
-      Info[i] := Trim(Info[i]);
-      Info[i] := Pad(Info[i], CharsPerLine);
+    For ICnt := 1 to numoflines DO BEGIN
+      Info[ICnt] := Trim(Info[ICnt]);
+      Info[ICnt] := Pad(Info[ICnt], CharsPerLine);
     END;
   END
 
@@ -4119,10 +4118,10 @@ BEGIN
 
           REPEAT
 
-            For i := 1 to Numoflines DO BEGIN
+            For ICnt := 1 to Numoflines DO BEGIN
               outline := '';
               For j := 1 to Config.Labelsperrow DO
-                Outline := Outline + St(Line[i], 45);
+                Outline := Outline + St(Line[ICnt], 45);
               println(printerstatus, outline);
             END;
             println(printerstatus, '');
@@ -4450,8 +4449,8 @@ BEGIN                 {MAIN PROGRAM}
 //     CheckDiscardDate := FALSE;
 //     DiscardDate := '00/00/0000';
 //    END; *)
-//    For i := 1 to (NumofLines - 1) DO BEGIN
-//      LabelInfo[i] := Blankline;
+//    For ICnt := 1 to (NumofLines - 1) DO BEGIN
+//      LabelInfo[ICnt] := Blankline;
 //    END;
 //(*    LabelInfo[NumOfLines] := Pad(Config.MCVName, CharsPerLine); *)
 //    InfoEntered := FALSE;
