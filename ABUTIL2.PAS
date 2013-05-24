@@ -663,7 +663,7 @@ PROCEDURE readstring(xloc,yloc:INTEGER; sense:STRING; VAR inputstr:STRING;
 
 PROCEDURE newreadstring(xloc,yloc:INTEGER; sense:STRING; VAR inputstr:STRING;
     strlength: INTEGER; VAR exitkey : STRING; MAXLength : integer; WrapAllowed : boolean;
-    HotZone : byte; VAR Cursorplace : byte; VAR InsertMode : boolean (*; BlankMessage : string*));
+    HotZone : byte; VAR Cursorplace : byte; VAR InsertMode : boolean);
   {***************************************************}
   {*  User input for string fields of set length.    *}
   {***************************************************}
@@ -672,104 +672,13 @@ PROCEDURE newreadstring(xloc,yloc:INTEGER; sense:STRING; VAR inputstr:STRING;
     err           : INTEGER;
     inchar                    : CHAR;
     oldcolors                 : BYTE;
-{    insertmode                : BOOLEAN; }
     i                         : BYTE;
     ScreenCount : longint;
     BlankDelay : longint;
     PauseDelay : word;
 
-(*   PROCEDURE GetDelay(VAR HowLongBeforeWaiting : longint; VAR HowLongtoWait : word; VAR BlankMessage : string);
-     VAR
-       DelayStr : string;
-       Infile : text;
-       DirInfo: SearchRec;
-       DelayNum : longint;
-       Errcode : integer;
-     BEGIN
-       FindFirst('delay.txt', Archive, DirInfo);
-       IF DosError = 0 THEN BEGIN
-         Assign(infile, 'delay.txt');
-         Reset(infile);
-         IF NOT EOF(infile) THEN BEGIN
-           Readln(infile, Delaystr);
-           Val(DelayStr, DelayNum, Errcode);
-         IF Errcode = 0 THEN
-           HowLongBeforeWaiting := DelayNum
-         ELSE
-           HowLongBeforeWaiting := 100000;
-         END;
-         IF NOT EOF(infile) THEN BEGIN
-           Readln(infile, Delaystr);
-           Val(DelayStr, DelayNum, Errcode);
-         IF Errcode = 0 THEN
-           HowLongToWait := DelayNum
-         ELSE
-           HowLongToWait := 1000;
-         END;
-         IF NOT EOF(infile) THEN BEGIN
-           Readln(infile, BlankMessage);
-           BlankMessage := Trim(BlankMessage);
-         END ELSE
-           BlankMessage := 'Press any key to return to program';
-         Close(infile);
-       END ELSE BEGIN
-         HowLongBeforeWaiting := 100000;
-         HowLongToWait := 1000;
-         BlankMessage := 'Press any key to return to program'
-       END;
-     END; *)
-
-(*   PROCEDURE SaveScreen(VAR Screencount : longint; ScreenMessage : string);
-     VAR
-       ScreenArea : areasavertype;
-       CurrentMin, CurrentMax : word;
-       Restart : char;
-       XX, YY : byte;
-       MsgColor : byte;
-       Blanker : string;
-       Counter : byte;
-       OldCursorplace : byte;
-       Catchchar : char;
-
-
-     BEGIN
-       CurrentMin := WindMin; CurrentMax := WindMax;
-       Window(1, 1, 80, 25);
-       SaveArea(1, 1, 80, 25, ScreenArea);
-       TextBackground(Black);
-       OldCursorPlace := Cursorplace;
-       Clrscr;
-       Randomize;
-       Blanker := '';
-       ScreenMessage := Trim(ScreenMessage);
-       For counter := 1 to Length(ScreenMessage) DO
-         Blanker := Blanker + ' ';
-       While NOT Keypressed DO BEGIN
-       {Repeat}
-         XX := Random(80 - Length(ScreenMessage)) + 1;
-         YY := Random(20)+1;
-         MsgColor := Random(15)+1;
-         Say(XX, YY, ScreenMessage, MsgColor);
-         Delay(PauseDelay);
-         Say(XX, YY, Blanker, Black);
-       {Until KeyPressed;}
-       END;
-       CatchChar := readkey;
-       IF CatchChar = #0 THEN BEGIN
-         Catchchar := Readkey;
-         WRITE('FANCY KEY!');
-         Readln;
-       END;
-       ScreenCount := 0;
-       RestoreArea(1, 1, ScreenArea);
-       WindMin := CurrentMin; WindMax := CurrentMax;
-       Cursorplace := OldCursorplace;
-     END; *)
-
-
   BEGIN
     Screencount := 0;
-    (* GetDelay(BlankDelay, PauseDelay, BlankMessage); *)
     oldcolors:=TEXTATTR; TEXTCOLOR(LightGray); TEXTBACKGROUND(Black);
     exitkey:=''; {cursorplace:=1;  insertmode:=FALSE;}
     inputstr:=COPY(inputstr,1,strlength);
@@ -777,16 +686,7 @@ PROCEDURE newreadstring(xloc,yloc:INTEGER; sense:STRING; VAR inputstr:STRING;
     REPEAT
       IF NOT KEYPRESSED THEN BEGIN
         Inc(Screencount);
- (*     GotoXY(2,2);
-        Write('      ');
-        GoToXY(2,2);
-        Write(Screencount);
-       Delay(10); *)
-(*        IF Screencount > BlankDelay THEN
-          SaveScreen(Screencount, BlankMessage); *)
-
-      END ELSE
-{      IF KEYPRESSED THEN } BEGIN
+      END ELSE BEGIN {IF KEYPRESSED}
         inchar:=READKEY;
         Screencount := 0;
         IF POS('C',sense)>0 THEN inchar:=UPCASE(inchar);
@@ -873,18 +773,6 @@ PROCEDURE newreadstring(xloc,yloc:INTEGER; sense:STRING; VAR inputstr:STRING;
           #27 : BEGIN  { User pressed escape.}
                   exitkey:='ESC';
                 END;
-       (*   #32 : BEGIN {space bar}
-                   If cursorplace < maxlength THEN BEGIN
-                      insert(' ',inputstr, cursorplace);
-                      delete(inputstr,strlength,1);
-                      inc(cursorplace);
-                   END ELSE BEGIN
-                     Exitkey := 'WRAP';
-                     cursorplace := 1;
-                   END;
-
-                END; *)
-
           #8  : BEGIN  { User pressed backspace.}
                   IF cursorplace>1 THEN BEGIN
                     DEC(cursorplace,1); DELETE(inputstr,cursorplace,1);
@@ -974,25 +862,8 @@ PROCEDURE newreadstring(xloc,yloc:INTEGER; sense:STRING; VAR inputstr:STRING;
                   Cursorplace := 1;
              END;
            END;  { End of case statement.}
-
-             GOTOXY(xloc,yloc); WRITE(inputstr); GOTOXY(xloc+cursorplace-1,yloc);
-
-{        IF length(trim(inputstr)) = MaxLength THEN
-          Exitkey := 'RETURN';
-        IF WrapAllowed THEN BEGIN
-          IF cursorplace >= HotZone AND Pos(substr, S) > 0
-        END; }
-
-        END; (* ELSE BEGIN
-        Inc(Screencount);
-        GotoXY(2,2);
-        Write(Screencount);
-      END; *)
-
-{      IF Screencount > BlankDelay THEN
-        SaveScreen(Screencount, BlankMessage); }
-(*      GOTOXY(xloc,yloc); WRITE(inputstr); GOTOXY(xloc+cursorplace-1,yloc); *)
-
+           GOTOXY(xloc,yloc); WRITE(inputstr); GOTOXY(xloc+cursorplace-1,yloc);
+        END;
     UNTIL exitkey<>'';
     inputstr:=COPY(inputstr,1,strlength);
     TEXTATTR:=oldcolors; GOTOXY(xloc,yloc); WRITELN(inputstr);

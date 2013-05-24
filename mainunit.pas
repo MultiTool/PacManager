@@ -13,7 +13,11 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    TestEditor: TEdit;
     procedure FormCreate(Sender: TObject);
+    procedure TestEditorChange(Sender: TObject);
+    procedure TestEditorKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     // procedure FormCreate(Sender: TObject);
   private
     { private declarations }
@@ -33,6 +37,67 @@ begin
   TextBackground(LightGray);
   TextColor(Black);
   ColorScheme := TextAttr;
+end;
+procedure MainLoop;
+begin
+  //REPEAT {until Quit}
+  DrugHandle := NIL;
+  New(DrugHandle);
+  InitDrugHandle(DrugHandle^);
+  InitManu(Manu);
+  For ICnt := 1 to (NumofLines - 1) DO BEGIN
+    LabelInfo[ICnt] := Blankline;
+  END;
+  InfoEntered := FALSE;
+  Screen(Title, Version, Black, LightGray, Blue);
+  TextAttr := Colorscheme;
+  Interactive := 'N';
+  GetSetDate(Config, Interactive);
+  LabelInfo[NumOfLines] := Pad(Config.MCVName, CharsPerLine);
+  LoopCounter := 0;
+  REPEAT {MoreLabels}
+     ManuInfoEntered := FALSE;
+     REPEAT {Edit}
+       TextAttr := Colorscheme;
+       DrawBox(2,3,21,21,DarkGray,Cyan,White,White,'','', '',#218, #196, #191, #179, #192, #217, #176, #177);
+       TextBackground(Cyan);
+       FunctionKey(2, 2);
+       TextBackground(Blue);
+       EnterInfo(LabelInfo, InfoEntered, 'Y', DrugEntered, ManuInfoEntered, Retrieved, LotUsed, LabelFileName, Recnum, Quit, DrugFile);
+       IF Not QUIT THEN BEGIN
+         IF DrugEntered THEN Inc(LoopCounter);
+           IF (InfoEntered) THEN BEGIN
+             Center('Edit info? [Y/N]', 8, Yellow);
+             Edit := Upcase(readkey);
+           END ELSE
+             Edit := 'N';
+       END ELSE
+         Edit := 'N';
+     UNTIL Edit = 'N';
+     IF NOT Quit THEN BEGIN
+       PrintLabels(LabelInfo, 'LPT1');
+       If NumberOfPrints <> 0 THEN BEGIN
+         Say(2,2,'Print this label again? [Y/N]   ', White);
+         MoreLabels := Upcase(Readkey);
+       END ELSE
+         MoreLabels := 'N';
+     END ELSE
+       MoreLabels := 'N';
+  UNTIL MoreLabels = 'N';
+  IF Not QUIT THEN BEGIN
+    IF DrugEntered OR LotUsed OR (LoopCounter > 0) THEN BEGIN
+      UpdateConfig(Config, DateChanged);
+      WriteOutput(LabelInfo, numberofprints, 'package.dbf', DrugEntered, DrugHandle);
+      IF DrugEntered THEN BEGIN
+        WriteManuInfo(Manu, DrugFile, RecNum, DrugHandle);
+      END;
+    END;
+    IF Not DrugEntered THEN BEGIN
+      SaveLabel(LabelInfo, Config.Prefix);
+    END;
+  END;
+  Dispose(DrugHandle);
+  //UNTIL Quit;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -56,70 +121,27 @@ begin                 {MAIN PROGRAM}
     TextColor(Black);
     ColorScheme := TextAttr;
     Quit := FALSE;
-    REPEAT
-      DrugHandle := NIL;
-      New(DrugHandle);
-      InitDrugHandle(DrugHandle^);
-      InitManu(Manu);
-      For ICnt := 1 to (NumofLines - 1) DO BEGIN
-        LabelInfo[ICnt] := Blankline;
-      END;
-      InfoEntered := FALSE;
-      Screen(Title, Version, Black, LightGray, Blue);
-      TextAttr := Colorscheme;
-      Interactive := 'N';
-      GetSetDate(Config, Interactive);
-      LabelInfo[NumOfLines] := Pad(Config.MCVName, CharsPerLine);
-      LoopCounter := 0;
-      REPEAT
-         ManuInfoEntered := FALSE;
-         REPEAT
-           TextAttr := Colorscheme;
-           DrawBox(2,3,21,21,DarkGray,Cyan,White,White,'','', '',#218, #196, #191, #179, #192, #217, #176, #177);
-           TextBackground(Cyan);
-           FunctionKey(2, 2);
-           TextBackground(Blue);
-           EnterInfo(LabelInfo, InfoEntered, 'Y', DrugEntered, ManuInfoEntered, Retrieved,
-              LotUsed, LabelFileName, Recnum, Quit, DrugFile);
-           IF Not QUIT THEN BEGIN
-             IF DrugEntered THEN Inc(LoopCounter);
-               IF (InfoEntered) THEN BEGIN
-                 Center('Edit info? [Y/N]', 8, Yellow);
-                 Edit := Upcase(readkey);
-               END ELSE
-                 Edit := 'N';
-           END ELSE
-             Edit := 'N';
-         UNTIL Edit = 'N';
-         IF NOT Quit THEN BEGIN
-           PrintLabels(LabelInfo, 'LPT1');
-           If NumberOfPrints <> 0 THEN BEGIN
-             Say(2,2,'Print this label again? [Y/N]   ', White);
-             MoreLabels := Upcase(Readkey);
-           END ELSE
-             MoreLabels := 'N';
-         END ELSE
-           MoreLabels := 'N';
-      UNTIL MoreLabels = 'N';
-      IF Not QUIT THEN BEGIN
-        IF DrugEntered OR LotUsed OR (LoopCounter > 0) THEN BEGIN
-          UpdateConfig(Config, DateChanged);
-          WriteOutput(LabelInfo, numberofprints, 'package.dbf', DrugEntered, DrugHandle);
-          IF DrugEntered THEN BEGIN
-            WriteManuInfo(Manu, DrugFile, RecNum, DrugHandle);
-          END;
-        END;
-        IF Not DrugEntered THEN BEGIN
-          SaveLabel(LabelInfo, Config.Prefix);
-        END;
-      END;
-      Dispose(DrugHandle);
+    REPEAT {until Quit}
+      MainLoop;
     UNTIL Quit;
     Window(1,1,80,25);
     TextColor(LightGray);
     TextBackground(Black);
     Clrscr;
   END;
+end;
+
+procedure TMainForm.TestEditorChange(Sender: TObject);
+begin
+  // TestEditor.OnKeyDown:=;
+end;
+
+procedure TMainForm.TestEditorKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  nop: Boolean;
+begin // just experimenting to see how keys are handled.
+  nop := true;
 end;
 
 end.

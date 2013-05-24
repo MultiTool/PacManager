@@ -4,6 +4,18 @@ object MainForm: TMainForm
   Top = 617
   Width = 672
   Caption = 'MainForm'
+  ClientHeight = 419
+  ClientWidth = 672
   OnCreate = FormCreate
   LCLVersion = '1.0.8.0'
+  object TestEditor: TEdit
+    Left = 16
+    Height = 23
+    Top = 192
+    Width = 74
+    OnChange = TestEditorChange
+    OnKeyDown = TestEditorKeyDown
+    TabOrder = 0
+    Text = 'TestEditor'
+  end
 end
